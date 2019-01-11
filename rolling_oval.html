@@ -1,0 +1,112 @@
+﻿<html>
+<body>
+
+<canvas id="cnvs" width="500px" height="500px"></canvas>
+
+<div>
+  a:
+  <input type="text" id="a" placeholder="n" style="width: 30px" value="50">
+  b:
+  <input type="text" id="b" placeholder="my" style="width: 30px" value="70">
+  angle:
+  <input type="text" id="angle" placeholder="mit" style="width: 30px" value="0">
+  cf:
+  <input type="text" id="cf" placeholder="mo" style="width: 30px" value="1">
+  <button onclick = "ready()">ready</button>
+
+</div>
+<script>
+  var canvas=document.getElementById('cnvs');
+  var c = canvas.getContext('2d');
+  var cf;
+  var a;
+  var b;
+  var point_mass = []
+  var iteration = 0;
+  var max = 0;
+  var angle = 0;
+  function init_el(num,c_x,c_y,deg){
+    //let c_x = 400;
+    //let c_y = 400;
+    let max;
+    let degs = 360/num;
+    for(var i=0;i<360;i+=degs){
+      let p = (-i)*(Math.PI/180)+(Math.PI/2);
+      let x = (c_x+Math.cos(p)*a);
+      let y = (c_y+Math.sin(p)*b);
+      let y_res = x*Math.sin(deg*(Math.PI/180)) + y*Math.cos(deg*(Math.PI/180));
+      let x_res = x*Math.cos(deg*(Math.PI/180)) - y*Math.sin(deg*(Math.PI/180));
+      let point = [x_res,y_res];
+      point_mass.push(point);
+    }
+    //console.log(point_mass);
+    //c.fillStyle = '#ff0000';
+    max = -100000000;
+    point_mass.forEach(function (item){
+
+      if(item[1]>max){
+        max = item[1];
+      }
+      // console.log(item[1]);
+    });
+    //console.log(max);
+    c.beginPath();
+    c.moveTo(point_mass[0][0], point_mass[0][1]+(b-max));
+    let len = point_mass.length;
+
+    //console.log(Math.cos(-Math.PI));
+    for(let i = len - 1; i >= 0; i--){
+      let item = point_mass[i];
+      c.lineTo(item[0],item[1]+(b-max));
+    }
+    point_mass = [];
+    c.closePath();
+    //c.fill();
+    c.lineWidth = 2; // толщина линии
+    c.strokeStyle = "#ff0000"; // цвет линии
+    c.stroke();
+
+  }
+
+  function rot(){
+
+
+    // c.rotate(30);
+    // let cf = 1;
+    c.clearRect(-100, 0, 1100, 900);
+    c.save();
+    if(iteration== (800+a)/cf){
+      iteration = 0;
+    }
+    let shift = cf*iteration;
+
+    c.translate(0+shift,400);
+
+    init_el(500,0,0,cf*iteration);
+    iteration++;
+    c.restore();
+
+    c.beginPath();
+    c.moveTo(0,400+b);
+    c.lineTo(1000,400+b);
+    c.lineWidth = 2; // толщина линии
+    c.strokeStyle = "#ff0000"; // цвет линии
+    c.stroke();
+
+  }
+
+  //init_el(360,400,400);
+  function ready(){
+    a = parseInt(document.getElementById('a').value);
+    b = parseInt(document.getElementById('b').value);
+    angle =parseInt(document.getElementById('angle').value);
+    cf = parseInt(document.getElementById('cf').value);
+    c.rotate(angle*(Math.PI/180));
+    setInterval(rot,100);
+  }
+
+
+
+
+</script>
+</body></html>
